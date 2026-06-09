@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "skills": [
+    {
+      "name": "triage-bug",
+      "description": "Reproduce a bug, propose a fix, add a task.",
+      "path": "triage-bug/SKILL.md"
+    }
+  ]
+}

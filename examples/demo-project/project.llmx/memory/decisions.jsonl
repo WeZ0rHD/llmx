@@ -1,0 +1,2 @@
+{"id":"0ef5c36e-712d-4c76-ac3a-ca0c123a1821","title":"Use PostgreSQL for relational data","rationale":"Mature migrations, JSONB for semi-structured data","alternatives":[],"decidedBy":"claude-code","createdAt":"2026-06-09T20:53:48.584Z"}
+{"id":"5f2ea9f8-bec9-4122-a520-5d4c64cfe614","title":"Use Hono for the API layer","rationale":"Tiny, fast, runs everywhere","alternatives":[],"decidedBy":"codex","createdAt":"2026-06-09T20:53:48.637Z"}

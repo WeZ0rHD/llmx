@@ -1,0 +1,7 @@
+{
+  "name": "default",
+  "description": "Default agent preferences applied to any LLMX-aware agent.",
+  "preferences": {
+    "style": "concise"
+  }
+}

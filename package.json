@@ -1,0 +1,67 @@
+{
+  "name": "llmx",
+  "version": "0.1.0",
+  "description": "One memory. Every agent. LLMX is an open context layer for AI coding agents.",
+  "type": "module",
+  "bin": {
+    "llmx": "./dist/cli/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js"
+    },
+    "./adapters/claude-code": {
+      "types": "./dist/adapters/claude-code/index.d.ts",
+      "import": "./dist/adapters/claude-code/index.js"
+    },
+    "./adapters/codex": {
+      "types": "./dist/adapters/codex/index.d.ts",
+      "import": "./dist/adapters/codex/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit",
+    "clean": "rm -rf dist coverage .tsbuildinfo",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "mcp",
+    "context",
+    "claude-code",
+    "codex",
+    "llmx"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "chokidar": "^3.6.0",
+    "commander": "^12.1.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  },
+  "packageManager": "npm@11.6.2"
+}

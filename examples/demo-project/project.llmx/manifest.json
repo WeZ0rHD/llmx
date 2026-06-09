@@ -1,0 +1,11 @@
+{
+  "llmxVersion": "0.1.0",
+  "schemaVersion": 1,
+  "name": "demo-app",
+  "createdAt": "2026-06-09T20:51:18.276Z",
+  "updatedAt": "2026-06-09T20:51:18.276Z",
+  "agents": [
+    "claude-code",
+    "codex"
+  ]
+}

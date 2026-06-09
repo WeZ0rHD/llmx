@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "tasks": [
+    {
+      "id": "eb9e1a17-c830-43ed-9d77-2a5613617bc0",
+      "title": "Implement auth (OAuth + email)",
+      "description": "",
+      "status": "pending",
+      "createdAt": "2026-06-09T20:54:53.426Z",
+      "updatedAt": "2026-06-09T20:54:53.426Z",
+      "tags": [
+        "backend",
+        "security"
+      ]
+    },
+    {
+      "id": "0295e5cb-f0db-4cc0-a2b8-eaef2a2bd122",
+      "title": "Wire the payments webhook",
+      "description": "",
+      "status": "pending",
+      "createdAt": "2026-06-09T20:54:53.485Z",
+      "updatedAt": "2026-06-09T20:54:53.485Z",
+      "tags": [
+        "backend",
+        "urgent"
+      ]
+    },
+    {
+      "id": "e5f74a53-55f6-4ce8-809c-3a1eee934ba0",
+      "title": "Set up CI",
+      "description": "",
+      "status": "pending",
+      "createdAt": "2026-06-09T20:54:53.560Z",
+      "updatedAt": "2026-06-09T20:54:53.560Z",
+      "tags": [
+        "infra"
+      ]
+    }
+  ]
+}
