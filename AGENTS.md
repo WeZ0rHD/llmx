@@ -12,9 +12,11 @@ This file is read by every AI coding agent that enters this repository (Codex, C
 LLMX is a CLI + format that lets any AI coding agent (Claude Code, Codex, Cursor, Aider…) share a single canonical memory of a project: decisions, tasks, sessions, skills, audit log. Each agent reads/writes through `llmx` commands or the MCP server; LLMX re-renders the agent-native files (`CLAUDE.md`, `AGENTS.md`, etc.) from one source of truth.
 
 - **Spec**: [`specs/llmx-v0.1.md`](specs/llmx-v0.1.md)
-- **Vision**: [`docs/vision.md`](docs/vision.md)
-- **Roadmap**: [`docs/roadmap.md`](docs/roadmap.md)
+- **Vision**: [`docs/vision.md`](docs/vision.md) — v0.1 scope (coding agents)
+- **Strategic vision v2**: [`docs/strategic-vision-v2.md`](docs/strategic-vision-v2.md) — the UCP / universal context horizon
+- **Roadmap**: [`docs/roadmap.md`](docs/roadmap.md) — two parallel tracks
 - **Security**: [`docs/security.md`](docs/security.md)
+- **RFCs**: [`specs/rfcs/`](specs/rfcs/) — protocol design decisions
 
 ## Repository layout
 
