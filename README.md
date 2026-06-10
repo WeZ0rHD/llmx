@@ -1,5 +1,7 @@
 # LLMX
 
+[![CI](https://github.com/WeZ0rHD/llmx/actions/workflows/ci.yml/badge.svg)](https://github.com/WeZ0rHD/llmx/actions/workflows/ci.yml)
+
 > **One memory. Every agent.**
 
 LLMX is an open context layer that makes project memory, tasks, decisions, skills and session summaries portable between AI coding agents like Claude Code, Codex, Cursor and future agents.
