@@ -143,8 +143,10 @@ full v0.2 surface listed above.
 - `src/mcp/index.ts` — entry point. Logs go to **stderr only** (stdout
  is the MCP wire protocol). Blocks until stdin EOFs.
 - `src/cli/mcp.ts` — `llmx mcp [--dir <path>]` boots the server.
-- `tests/mcp/tools.test.ts` —6 unit tests covering the tool registry
- contract and `createMcpServer` wiring.
+- `tests/mcp/tools.test.ts` —7 tests covering the tool registry
+ contract, `createMcpServer` wiring, and a real stdio integration
+ test that boots `dist/mcp/index.js` via `StdioClientTransport` and
+ drives `llmx_status` + `llmx_read_decision` end-to-end.
 
 ### Baseline tools in v0.2
 
@@ -164,10 +166,11 @@ full v0.2 surface listed above.
 - **Prompts**: no MCP prompts in v0.2.
 - **Auth / OAuth**: none — local-only stdio server, relying on the
  process boundary for trust.
-- **Tests for the stdio transport itself**: we cover the tool
- registry structurally; a full end-to-end test would require spawning
- the server and driving it via the SDK's `Client` + `StdioClientTransport`.
- Tracked for v0.2.1.
+- **Tests for the stdio transport itself**: a hermetic stdio
+ integration test is in place (boots the server, calls two tools,
+ verifies counts). Remaining: a CI matrix run against the SDK's
+ reference clients (Claude Desktop, MCP Inspector) — tracked for
+ v0.2.1.
 - **Audit log integration**: handlers can be audited by wrapping them
  with `repo.audit(...)`; not wired up yet.
 
