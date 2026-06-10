@@ -6,4 +6,6 @@ coverage/
 .env
 .env.local
 .llmx-cache/
+.opencode/
+*.tgz
 *.tsbuildinfo
