@@ -74,10 +74,45 @@ High priority:
 - `llmx session save|list|show`
 - `llmx export claude` / `llmx export codex` / `llmx export all`
 - `llmx audit`
+- `llmx doctor [--json]` — run self-checks (see [Doctor](#doctor-v01))
 
 Medium priority (next milestones):
 - `llmx skill create|list|show`
 - `llmx sync --watch`
+
+## Doctor (v0.1)
+
+`llmx doctor` runs a battery of integrity checks on a `project.llmx/`
+directory and reports `OK` / `WARN` / `ERROR` per check.
+
+| Check | What it verifies | Severity if fails |
+|---|---|---|
+| `llmx-dir-exists` | `project.llmx/` is a directory | ERROR |
+| `manifest-valid` | `manifest.json` parses and matches `ManifestSchema` | ERROR |
+| `decisions-valid` | `memory/decisions.jsonl` is valid JSONL, one record per line | ERROR |
+| `tasks-valid` | `memory/tasks.json` parses, task IDs unique | WARN if dupes |
+| `sessions-valid` | `sessions/history.jsonl` is valid JSONL | ERROR |
+| `audit-valid` | `logs/audit.jsonl` is valid JSONL | ERROR |
+| `no-orphans` | no untracked files/dirs in `project.llmx/` | WARN |
+
+Optional files on a fresh project (`decisions.jsonl`, `tasks.json`,
+`audit.jsonl`, `sessions/history.jsonl`) report `ok` with a
+"no X yet" detail.
+
+### Exit codes
+
+| Code | Meaning |
+|---|---|
+| `0` | All checks OK |
+| `1` | At least one WARN, no ERROR |
+| `2` | At least one ERROR |
+
+### Output
+
+Human (default): one line per check with a `✓` / `⚠` / `✗` icon,
+followed by a `Result: OK|WARN|ERROR` line.
+
+Machine (`--json`): `{ "result": "ok|warn|error", "checks": [...] }`
 
 ## MCP server (planned)
 

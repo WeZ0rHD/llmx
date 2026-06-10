@@ -10,3 +10,4 @@
 {"ts":"2026-06-09T20:54:53.679Z","actor":"llmx-cli","action":"export","target":"claude","meta":{"length":2140}}
 {"ts":"2026-06-09T20:54:53.736Z","actor":"llmx-cli","action":"export","target":"codex","meta":{"length":2472}}
 {"ts":"2026-06-09T20:54:53.807Z","actor":"llmx-cli","action":"status","meta":{}}
+{"ts":"2026-06-10T11:37:52.283Z","actor":"llmx-cli","action":"doctor","meta":{}}

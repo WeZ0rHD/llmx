@@ -23,6 +23,7 @@ llmx add-decision "Use PostgreSQL for relational data"
 llmx task add "Implement authentication"
 llmx session save "Initialized project and defined first architecture"
 llmx status
+llmx doctor           # integrity check on project.llmx/
 llmx export claude
 llmx export codex
 ```

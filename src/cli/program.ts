@@ -10,6 +10,7 @@ import { registerSession } from './session.js';
 import { registerSkills } from './skills.js';
 import { registerExport } from './export.js';
 import { registerAudit } from './audit.js';
+import { registerDoctor } from './doctor.js';
 import { FriendlyError } from './context.js';
 
 export function run(argv: string[]): Promise<void> {
@@ -29,6 +30,7 @@ export function run(argv: string[]): Promise<void> {
   registerSkills(program);
   registerExport(program);
   registerAudit(program);
+  registerDoctor(program);
 
   return program.parseAsync(argv).then(() => undefined).catch((err) => {
     // Commander throws for --help, --version, unknown command, etc. The
