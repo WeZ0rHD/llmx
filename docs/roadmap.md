@@ -2,7 +2,7 @@
 
 > Two tracks in parallel. Track 1 (coding agents) ships in days and funds the
 > rest. Track 2 (universal context protocol) is the v2.0 horizon — we lay
-> rails for it now, ship it later. See `docs/strategic-vision-v2.md` and
+> rails for it now, ship it later. See `docs/internal/horizon-2.0.md` and
 > `specs/rfcs/0001-universal-context-protocol.md`.
 
 ## v0.1 — local-first MVP (shipped)
@@ -41,7 +41,7 @@ namespace for non-coding contexts.
       backwards compat)
 - [ ] `llmx chat import <file> --port <name>` CLI stub that errors with
       "no port registered yet" — but the parser exists
-- [ ] `docs/strategic-vision-v2.md` published
+- [ ] `docs/internal/horizon-2.0.md` published
 - [ ] `specs/rfcs/0001-universal-context-protocol.md` merged
 
 ## v0.3 — multi-project + first reference port
