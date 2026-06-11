@@ -1,5 +1,9 @@
 # LLMX
 
+[![CI](https://github.com/WeZ0rHD/llmx/actions/workflows/ci.yml/badge.svg)](https://github.com/WeZ0rHD/llmx/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/llmx)](https://www.npmjs.com/package/llmx)
+[![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 > **One memory. Every agent.**
 
 Stop re-explaining your project to your AI. LLMX is a local-first
