@@ -50,6 +50,18 @@
     "llmx"
   ],
   "license": "MIT",
+  "author": {
+    "name": "Romain Ruffray",
+    "email": "romain@llmx.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WeZ0rHD/llmx.git"
+  },
+  "homepage": "https://github.com/WeZ0rHD/llmx#readme",
+  "bugs": {
+    "url": "https://github.com/WeZ0rHD/llmx/issues"
+  },
   "engines": {
     "node": ">=20.0.0"
   },
