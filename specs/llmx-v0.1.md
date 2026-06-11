@@ -125,6 +125,65 @@ Tools: `get_project_state`, `get_tasks`, `add_task`, `update_task`,
 Resources: `llmx://memory/project-state`, `llmx://memory/tasks`,
 `llmx://memory/decisions`, `llmx://sessions/latest`, `llmx://skills/index`.
 
+## v0.2 — MCP server (WIP)
+
+The v0.2 release ships a working **stdio MCP server skeleton** built on
+[`@modelcontextprotocol/sdk@^1.29`](https://www.npmjs.com/package/@modelcontextprotocol/sdk).
+This section tracks the gap between what is in the repo today and the
+full v0.2 surface listed above.
+
+### What works now (v0.2 skeleton, shipped)
+
+- `src/mcp/tools.ts` — canonical tool registry, exports `TOOLS` and
+ `findTool(name)`. Handlers receive a `ToolContext` carrying a bound
+ `Repository` and a stable actor name (`llmx-mcp`) for the audit log.
+- `src/mcp/server.ts` — `createMcpServer(repo)` wires the registry onto
+ an `McpServer` from the SDK; `startStdioServer(repo)` connects it to a
+ `StdioServerTransport`.
+- `src/mcp/index.ts` — entry point. Logs go to **stderr only** (stdout
+ is the MCP wire protocol). Blocks until stdin EOFs.
+- `src/cli/mcp.ts` — `llmx mcp [--dir <path>]` boots the server.
+- `tests/mcp/tools.test.ts` —7 tests covering the tool registry
+ contract, `createMcpServer` wiring, and a real stdio integration
+ test that boots `dist/mcp/index.js` via `StdioClientTransport` and
+ drives `llmx_status` + `llmx_read_decision` end-to-end.
+
+### Baseline tools in v0.2
+
+| Tool | Description |
+|---|---|
+| `llmx_status` | Manifest + counts (tasks/decisions/sessions). |
+| `llmx_read_decision` | Read one decision by `id`, or list recent ones. |
+| `llmx_list_sessions` | List recent session summaries (newest first). |
+
+### What's NOT in v0.2 yet (gap to close)
+
+- **Write tools**: `add_task`, `update_task`, `add_decision`,
+ `save_session_summary` — only read-only tools are exposed today.
+- **Resources**: `llmx://memory/*`, `llmx://sessions/latest`,
+ `llmx://skills/index` — not registered yet (SDK supports them via
+ `server.registerResource`).
+- **Prompts**: no MCP prompts in v0.2.
+- **Auth / OAuth**: none — local-only stdio server, relying on the
+ process boundary for trust.
+- **Tests for the stdio transport itself**: a hermetic stdio
+ integration test is in place (boots the server, calls two tools,
+ verifies counts). Remaining: a CI matrix run against the SDK's
+ reference clients (Claude Desktop, MCP Inspector) — tracked for
+ v0.2.1.
+- **Audit log integration**: handlers can be audited by wrapping them
+ with `repo.audit(...)`; not wired up yet.
+
+### Migration notes
+
+- `zod` peer dependency bumped from `^3.23.8` to `^3.25.0` to satisfy
+ `@modelcontextprotocol/sdk`. No behavioural change for our schemas.
+- `@modelcontextprotocol/sdk` added as a runtime `dependencies` entry
+ (not `devDependencies`) because the published CLI exposes the server
+ via `npx llmx mcp`.
+- `vitest.config.ts` `include` extended to `tests/**/*.test.ts` to
+ pick up the new test location.
+
 ## Security defaults (v0)
 
 - Local-only mode is **on** by default (`tools/mcp.json`).
