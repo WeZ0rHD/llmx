@@ -43,3 +43,32 @@ export function redactValue<T>(value: T, cfg?: RedactionConfig): T {
   if (typeof value === 'string') return redact(value, cfg) as unknown as T;
   return value;
 }
+
+/**
+ * Append a single audit entry to a JSONL file. Used by both the project
+ * `Repository` and the `StudioRepository` so audit records look the same
+ * regardless of which module wrote them.
+ *
+ * The entry's string fields are run through `redactValue` before write.
+ */
+export interface AuditEntryInput {
+  actor: string;
+  action: string;
+  target: string;
+  result: 'ok' | 'warn' | 'error';
+  [k: string]: unknown;
+}
+
+export async function appendAudit(
+  filePath: string,
+  entry: AuditEntryInput,
+  cfg?: RedactionConfig,
+): Promise<void> {
+  const { promises: fs } = await import('node:fs');
+  const path = await import('node:path');
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+  const ts = new Date().toISOString();
+  const safe = redactValue(entry, cfg);
+  const line = JSON.stringify({ ts, ...safe }) + '\n';
+  await fs.appendFile(filePath, line, 'utf8');
+}
