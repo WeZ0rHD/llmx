@@ -183,6 +183,42 @@ export class StudioRepository {
     return stripped;
   }
 
+  /**
+   * Read every inbox entry with its body and classified sidecar in a
+   * single pass. Used by the synthesiser.
+   */
+  async readAllInboxWithClassified(): Promise<{
+    id: string;
+    filename: string;
+    captured_at: string;
+    source: string;
+    body: string;
+    classified: ClassifiedEntry | null;
+  }[]> {
+    const entries = await this.listInboxEntries();
+    const out: {
+      id: string;
+      filename: string;
+      captured_at: string;
+      source: string;
+      body: string;
+      classified: ClassifiedEntry | null;
+    }[] = [];
+    for (const e of entries) {
+      const body = await this.readInboxBody(e.filename);
+      const classified = await this.readClassified(e.frontmatter.id);
+      out.push({
+        id: e.frontmatter.id,
+        filename: e.filename,
+        captured_at: e.frontmatter.captured_at,
+        source: e.frontmatter.source,
+        body,
+        classified,
+      });
+    }
+    return out;
+  }
+
   /* ------------------------------------------------------------ */
   /* Classified sidecars                                           */
   /* ------------------------------------------------------------ */
@@ -205,6 +241,88 @@ export class StudioRepository {
       if (isNoEnt(err)) return null;
       throw err;
     }
+  }
+
+  /* ------------------------------------------------------------ */
+  /* Syntheses & drafts                                            */
+  /* ------------------------------------------------------------ */
+
+  /** Stable filename for a digest: `YYYY-Www.md` (ISO week). */
+  static buildSynthesisFilename(at: Date = new Date()): string {
+    return `${isoWeek(at)}.md`;
+  }
+
+  async writeSynthesis(body: string, actor: string): Promise<string> {
+    const filename = StudioRepository.buildSynthesisFilename();
+    const target = path.join(this.paths.synthesesDir, filename);
+    await this.writeFileAtomic(target, body);
+    await appendAudit(this.paths.auditLog, {
+      actor,
+      action: 'studio.synthesize',
+      target,
+      result: 'ok',
+    }, this.redaction);
+    return filename;
+  }
+
+  async listSyntheses(): Promise<{ filename: string; created_at: string }[]> {
+    let names: string[];
+    try {
+      names = await fs.readdir(this.paths.synthesesDir);
+    } catch (err: unknown) {
+      if (isNoEnt(err)) return [];
+      throw err;
+    }
+    return names
+      .filter((n) => n.endsWith('.md'))
+      .sort()
+      .reverse()
+      .map((filename) => {
+        const match = filename.match(/^(\d{4})-W(\d{2})\.md$/);
+        const created_at = match
+          ? isoWeekToDate(Number(match[1]), Number(match[2])).toISOString()
+          : new Date(0).toISOString();
+        return { filename, created_at };
+      });
+  }
+
+  async writeDraft(opts: {
+    synthesisFilename: string | null;
+    source: 'inbox' | 'decision' | 'release' | 'synthesis';
+    format: 'x-thread' | 'linkedin' | 'blog';
+    body: string;
+    actor: string;
+  }): Promise<string> {
+    const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const prefix = opts.synthesisFilename ? opts.synthesisFilename.replace(/\.md$/, '') : 'standalone';
+    const filename = `${ts}_${prefix}_${opts.format}.md`;
+    const target = path.join(this.paths.draftsDir, filename);
+    await this.writeFileAtomic(target, opts.body);
+    await appendAudit(this.paths.auditLog, {
+      actor: opts.actor,
+      action: 'studio.draft',
+      target,
+      result: 'ok',
+    }, this.redaction);
+    return filename;
+  }
+
+  async listDrafts(): Promise<{ filename: string; created_at: string }[]> {
+    let names: string[];
+    try {
+      names = await fs.readdir(this.paths.draftsDir);
+    } catch (err: unknown) {
+      if (isNoEnt(err)) return [];
+      throw err;
+    }
+    return names
+      .filter((n) => n.endsWith('.md'))
+      .sort()
+      .reverse()
+      .map((filename) => ({
+        filename,
+        created_at: filename.slice(0, 19).replace('T', ' ') + 'Z',
+      }));
   }
 
   /* ------------------------------------------------------------ */
@@ -291,6 +409,25 @@ function slugify(text: string, maxLen: number): string {
 
 function isNoEnt(err: unknown): boolean {
   return !!err && typeof err === 'object' && 'code' in err && (err as { code: unknown }).code === 'ENOENT';
+}
+
+/** ISO 8601 week, e.g. `2026-W24`. */
+function isoWeek(d: Date): string {
+  const target = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  const dayNum = target.getUTCDay() || 7;
+  target.setUTCDate(target.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil(((target.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+  return `${target.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`;
+}
+
+function isoWeekToDate(year: number, week: number): Date {
+  const simple = new Date(Date.UTC(year, 0, 1 + (week - 1) * 7));
+  const dow = simple.getUTCDay();
+  const ISOweekStart = new Date(simple);
+  if (dow <= 4) ISOweekStart.setUTCDate(simple.getUTCDate() - simple.getUTCDay() + 1);
+  else ISOweekStart.setUTCDate(simple.getUTCDate() + 8 - simple.getUTCDay());
+  return ISOweekStart;
 }
 
 // Re-export the redactor so consumers don't need a second import path.
