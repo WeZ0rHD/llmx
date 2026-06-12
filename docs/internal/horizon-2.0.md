@@ -1,6 +1,21 @@
-# LLMX — Strategic Vision v2: The HTTP of Agent Contexts
+# LLMX — Horizon 2.0 (internal note)
 
-> **One memory. Every agent. Every chat. Every surface.**
+> **Status: aspirational backlog. Not a roadmap. Not a commitment.**
+
+This is a working note for a **v2.0 horizon** (12-24 months out, funding
+permitting). It is **not** the v0.x roadmap — see `docs/roadmap.md` for that.
+It is **not** a commitment to ship any of the features below. It is a place
+to keep the long-term shape in mind so v0.x decisions don't paint us into
+a corner.
+
+If you're an early adopter reading this: **ignore this document.** Use
+`docs/vision.md` + `docs/roadmap.md` + the spec. This file is for the author
+and serious contributors.
+
+---
+
+> Original draft title: "Strategic Vision v2: The HTTP of Agent Contexts"
+> Original tagline: "One memory. Every agent. Every chat. Every surface."
 
 This document extends the v0.1 vision (see `docs/vision.md`) without replacing it.
 v0.1 stays the v1.0 milestone; this is the **v2.0 horizon** that informs what we

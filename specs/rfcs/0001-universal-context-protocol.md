@@ -7,7 +7,7 @@
 | **Created** | 2026-06-10 |
 | **Target spec** | `specs/llmx-v1.0.md` (extends v0.1) |
 | **Supersedes** | — |
-| **Related** | `docs/strategic-vision-v2.md` |
+| **Related** | `docs/internal/horizon-2.0.md` |
 
 ## Summary
 
@@ -253,7 +253,7 @@ the same model as git (snapshots + refs) and gives us free merge semantics.
 1. **v0.2 (now)**: land the new Zod schemas in `src/core/schema/conversation.ts`
    (new file, no behavior change). Add `llmx chat import --port <name>` as a
    stub that errors with "no port registered yet". Document in
-   `docs/strategic-vision-v2.md`.
+   `docs/internal/horizon-2.0.md`.
 2. **v0.3**: ship the first reference port (`port:chatgpt@0.1.0`) for manual
    JSON exports. CLI can import a real ChatGPT export. Tests round-trip a
    sample conversation.

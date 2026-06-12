@@ -13,7 +13,7 @@ LLMX is a CLI + format that lets any AI coding agent (Claude Code, Codex, Cursor
 
 - **Spec**: [`specs/llmx-v0.1.md`](specs/llmx-v0.1.md)
 - **Vision**: [`docs/vision.md`](docs/vision.md) — v0.1 scope (coding agents)
-- **Strategic vision v2**: [`docs/strategic-vision-v2.md`](docs/strategic-vision-v2.md) — the UCP / universal context horizon
+- **Strategic vision v2**: [`docs/internal/horizon-2.0.md`](docs/internal/horizon-2.0.md) — the UCP / universal context horizon (internal note, not a roadmap)
 - **Roadmap**: [`docs/roadmap.md`](docs/roadmap.md) — two parallel tracks
 - **Security**: [`docs/security.md`](docs/security.md)
 - **RFCs**: [`specs/rfcs/`](specs/rfcs/) — protocol design decisions
