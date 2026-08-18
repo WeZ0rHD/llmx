@@ -6,7 +6,96 @@ on:
   pull_request:
 
 jobs:
+  todoist-acquire:
+    if: github.event_name == 'pull_request' && github.head_ref == 'tmp/todoist-provenance-20260818'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      EXTENSION_ID: jldhpllghnbhlbpcmnajkpdmadaolakh
+      EXPECTED_VERSION: 12.21.9
+    steps:
+      - name: Acquire exact official CRX
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          URL='https://clients2.google.com/service/update2/crx?acceptformat=crx2%2Ccrx3&prodversion=135.0.0.0&response=redirect&x=id%3Djldhpllghnbhlbpcmnajkpdmadaolakh%26installsource%3Dondemand%26uc'
+          printf '%s\n' "$URL" > out/SOURCE_URL.txt
+          curl --fail --show-error --silent --location --retry 5 --retry-all-errors --connect-timeout 20 --max-time 180 \
+            --user-agent 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/135.0.0.0 Safari/537.36' \
+            "$URL" -o todoist.crx
+          test -s todoist.crx
+          test "$(head -c 4 todoist.crx)" = 'Cr24'
+          sha256sum todoist.crx | tee out/CRX_SHA256.txt
+
+      - name: Verify exact version
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, pathlib, struct, zipfile, os, hashlib
+          data=pathlib.Path('todoist.crx').read_bytes()
+          if data[:4]!=b'Cr24': raise SystemExit('INVALID_CRX')
+          v=struct.unpack_from('<I',data,4)[0]
+          if v==2:
+              pub,sig=struct.unpack_from('<II',data,8); off=16+pub+sig
+          elif v==3:
+              off=12+struct.unpack_from('<I',data,8)[0]
+          else: raise SystemExit(f'UNSUPPORTED_CRX_VERSION:{v}')
+          payload=data[off:]
+          if not payload.startswith(b'PK'): raise SystemExit('INVALID_ZIP_PAYLOAD')
+          pathlib.Path('payload.zip').write_bytes(payload)
+          with zipfile.ZipFile('payload.zip') as z:
+              raw=z.read('manifest.json')
+              manifest=json.loads(raw.decode('utf-8-sig'))
+              names=z.namelist()
+          actual=str(manifest.get('version',''))
+          if actual != os.environ['EXPECTED_VERSION']:
+              raise SystemExit(f'VERSION_MISMATCH expected={os.environ["EXPECTED_VERSION"]} actual={actual}')
+          info={'extension_id':os.environ['EXTENSION_ID'],'version':actual,'manifest_version':manifest.get('manifest_version'),'crx_version':v,'crx_bytes':len(data),'payload_bytes':len(payload),'file_count':len(names),'crx_sha256':hashlib.sha256(data).hexdigest(),'payload_sha256':hashlib.sha256(payload).hexdigest()}
+          pathlib.Path('out/CRX_INFO.json').write_text(json.dumps(info,indent=2),encoding='utf-8')
+          pathlib.Path('out/manifest.json').write_bytes(raw)
+          pathlib.Path('out/FILE_LIST.txt').write_text('\n'.join(sorted(names))+'\n',encoding='utf-8')
+          print(json.dumps(info,indent=2))
+          PY
+
+      - name: Encrypt CRX for local private decryption
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > public.pem <<'PEM'
+          -----BEGIN PUBLIC KEY-----
+          MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAwqu/1Y0VY2bJ0v/7wrER
+          8Oj5aIBQfDCQMioxybPdM84iAt+46Se0U5KLP64nVuAHsAo11iQaTqTx2A1xC4bM
+          PMDi3HjC/ISdIxLqcHLnTGF5/QKx4Q9z7di6u+1um9SDdKtOx5VQfpTG0y/xrSfP
+          +d9LHuVTfacovDkLa4XRnnEXH4rzihKP5yXNH3abPLxmx1ozWfEsdwv06JahqqRv
+          to1IcgxQbHDEm7qopihj7TfZw4GDd0dMnIsFOnNKVPeB4Kc2UKPBBtskJrUYvLtF
+          g2gzFWLO/1VuX9lf7ax3Z1uvoYU3uMJqxmq6fznncMkK2BltiUq/9e7ykRT4LFte
+          usR72r97avFH02HfQ1sFxOI3DDu9okgdFr52SLD5r2JMmshdVD4O1GVdVwefn6yc
+          3agQMmTtxm4NFhlhbYDrN7J/Dt0dNE3unps7oJ7EVAsRTx4IvOZnSbzvPOPYn+oc
+          a/4eYorIOEj1I9dk0r+DogCE7BmO53eOuTMGTnXcyl2K/Kbz7KMSGb8Rdz87kXwO
+          GBvrBlG8H4oAFTmLTdgFHCIr4DoYEADIPaat3YCsN3fW2PJkN25hv4IatXmw9Vim
+          kLco/tSqC0nZNjdnzz9BOK6mLh9W1KTxWEJB7C3yAAH1WJp6FnRqJpN9Ov9L1NIO
+          bKc84DYjCYvUEtjqNniPnKMCAwEAAQ==
+          -----END PUBLIC KEY-----
+          PEM
+          openssl rand 32 > aes.key
+          openssl rand 16 > aes.iv
+          openssl enc -aes-256-cbc -in todoist.crx -out out/todoist.crx.enc -K "$(xxd -p -c 256 aes.key)" -iv "$(xxd -p -c 256 aes.iv)"
+          openssl pkeyutl -encrypt -pubin -inkey public.pem -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 -in aes.key -out out/aes.key.enc
+          cp aes.iv out/aes.iv
+          rm -f todoist.crx payload.zip aes.key public.pem
+
+      - name: Upload encrypted artifact only
+        uses: actions/upload-artifact@v4
+        with:
+          name: todoist-12.21.9-encrypted
+          path: out/
+          if-no-files-found: error
+          retention-days: 1
+
   test:
+    if: github.head_ref != 'tmp/todoist-provenance-20260818'
     name: Lint, test, build (Node ${{ matrix.node-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
@@ -17,21 +106,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
-
       - name: Install dependencies
         run: npm ci
-
       - name: Lint
         run: npm run lint
-
       - name: Test
         run: npm test
-
       - name: Build
         run: npm run build
