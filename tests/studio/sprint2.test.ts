@@ -50,9 +50,9 @@ function entry(
 
 describe('buildDigest', () => {
   it('counts captured and classified in the window only', () => {
-    const now = new Date('2026-06-11T10:00:00Z');
+    const now = new Date();
     const inWindow = now.toISOString();
-    const outOfWindow = new Date('2025-01-01T00:00:00Z').toISOString();
+    const outOfWindow = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString();
     const digest = buildDigest(
       [
         entry('a', inWindow, 'Pricing', ['pricing']),

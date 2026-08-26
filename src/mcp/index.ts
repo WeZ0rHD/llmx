@@ -9,6 +9,7 @@
  */
 import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 
 import { Repository } from '../core/repository.js';
 import { startStdioServer } from './server.js';
@@ -56,7 +57,14 @@ export async function runServer(opts: RunServerOptions): Promise<void> {
 }
 
 // Allow direct execution: `node dist/mcp/index.js [projectRoot]`.
-if (import.meta.url === `file://${process.argv[1]}`) {
+const __isMain = (() => {
+  try {
+    return fileURLToPath(import.meta.url) === path.resolve(process.argv[1] ?? '');
+  } catch {
+    return false;
+  }
+})();
+if (__isMain) {
  const projectRoot = process.argv[2] ?? process.cwd();
  runServer({ projectRoot }).catch((err: unknown) => {
  // eslint-disable-next-line no-console
