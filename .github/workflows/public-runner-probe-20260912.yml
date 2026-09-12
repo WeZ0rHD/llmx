@@ -1,0 +1,25 @@
+name: Public Runner Probe 2026-09-12
+
+on:
+  push:
+    branches:
+      - ci/account-runner-probe-20260912
+    paths:
+      - ".github/workflows/public-runner-probe-20260912.yml"
+      - ".ci/public-runner-probe-20260912.txt"
+
+permissions: {}
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Native runner probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "PUBLIC_RUNNER_PROBE_OK"
+          uname -a
+          node --version
+          npm --version
