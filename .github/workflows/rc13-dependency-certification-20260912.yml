@@ -23,6 +23,13 @@ jobs:
         with:
           node-version: "22.16.0"
 
+      - name: Pin npm 11.6.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --global npm@11.6.0
+          test "$(npm --version)" = "11.6.0"
+
       - name: Prepare exact RC13 dependency manifest
         shell: bash
         run: |
